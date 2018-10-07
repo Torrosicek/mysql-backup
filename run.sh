@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Get and set secret file for mysql pass if exists
+if [[ -e $MYSQL_PASS_FILE && -f $MYSQL_PASS_FILE  ]]; then
+  MYSQL_PASS=$(cat $MYSQL_PASS_FILE)
+fi
+
 if [ "${MYSQL_ENV_MYSQL_PASS}" == "**Random**" ]; then
         unset MYSQL_ENV_MYSQL_PASS
 fi
