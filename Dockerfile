@@ -1,8 +1,9 @@
-FROM ubuntu:trusty
-MAINTAINER Yohann LOEFFLER <loeffler.yohann@gmail.com>
+FROM alpine:latest
+LABEL maintainer="Yohann LOEFFLER <loeffler.yohann@gmail.com>"
 
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends cron mysql-client && \
+RUN apk add --no-cache \
+        mysql-client \
+    ; \
     mkdir /backup
 
 ENV CRON_TIME="0 0 * * *" \
@@ -10,4 +11,5 @@ ENV CRON_TIME="0 0 * * *" \
 ADD run.sh /run.sh
 VOLUME ["/backup"]
 
-CMD ["/run.sh"]
+ENTRYPOINT ["/run.sh"]
+CMD ["/usr/sbin/crond", "-l 2", "-f"]
