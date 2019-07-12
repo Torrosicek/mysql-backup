@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 
 # Get and set secret file for mysql pass if exists
 if [[ -e $MYSQL_PASS_FILE && -f $MYSQL_PASS_FILE  ]]; then
@@ -29,7 +29,7 @@ MYSQL_DB=${MYSQL_DB}
 echo "=> Creating backup script"
 rm -f /backup.sh
 cat <<EOF >> /backup.sh
-#!/bin/bash
+#!/bin/sh
 MAX_BACKUPS=${MAX_BACKUPS}
 
 if [ "${MYSQL_DB}" != "--all-databases" ]; then
@@ -75,7 +75,7 @@ chmod +x /backup.sh
 echo "=> Creating restore script"
 rm -f /restore.sh
 cat <<EOF >> /restore.sh
-#!/bin/bash
+#!/bin/sh
 
 if [ -z \$2 ]; then
 	echo "=> Restore database from \$1"
@@ -97,7 +97,6 @@ EOF
 chmod +x /restore.sh
 
 touch /mysql_backup.log
-tail -F /mysql_backup.log &
 
 if [ -n "${INIT_BACKUP}" ]; then
     echo "=> Create a backup on the startup"
@@ -112,7 +111,7 @@ elif [ -n "${INIT_RESTORE_LATEST}" ]; then
     ls -d -1 /backup/* | tail -1 | xargs /restore.sh
 fi
 
-echo "${CRON_TIME} /bin/bash /backup.sh >> /mysql_backup.log 2>&1" > /crontab.conf
+echo "${CRON_TIME} /bin/sh /backup.sh | tee -a /mysql_backup.log 2>&1" > /crontab.conf
 crontab /crontab.conf
 echo "=> Running cron job"
-exec cron -f
+exec $@
