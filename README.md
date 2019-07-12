@@ -23,6 +23,7 @@ Moreover, if you link `yloeffler/mysql-backup` to a mysql container(e.g. `tutum/
     MYSQL_PORT      the port number of your mysql database
     MYSQL_USER      the username of your mysql database
     MYSQL_PASS      the password of your mysql database
+    MYSQL_PASS_FILE the secret file of your mysql database password (optional)
     MYSQL_DB        the database name to dump. Default: `--all-databases`
     EXTRA_OPTS      the extra options to pass to mysqldump command
     CRON_TIME       the interval of cron job to run mysqldump. `0 0 * * *` by default, which is every day at 00:00
