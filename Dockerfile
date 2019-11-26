@@ -6,7 +6,8 @@ RUN apk add --no-cache \
     ; \
     mkdir /backup
 
-ENV CRON_TIME="0 0 * * *" \
+ENV COMPRESS_CMD="gzip" \
+    CRON_TIME="0 0 * * *" \
     MYSQL_DB="--all-databases"
 ADD run.sh /run.sh
 VOLUME ["/backup"]

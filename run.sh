@@ -53,6 +53,9 @@ else
 
 	echo "=> Backup started: \${BACKUP_NAME}"
 	if \${BACKUP_CMD} > /backup/\${BACKUP_NAME} ;then
+		if [ -n "\${COMPRESS}" ]; then
+			\${COMPRESS_CMD} /backup/\${BACKUP_NAME}
+		fi
 		echo "   Backup succeeded"
 	else
 	echo "   Backup failed"
