@@ -2,11 +2,11 @@
 
 # Get and set secret file for mysql pass if exists
 if [[ -e $MYSQL_PASS_FILE && -f $MYSQL_PASS_FILE  ]]; then
-  MYSQL_PASS=$(cat $MYSQL_PASS_FILE)
+	MYSQL_PASS=$(cat $MYSQL_PASS_FILE)
 fi
 
 if [ "${MYSQL_ENV_MYSQL_PASS}" == "**Random**" ]; then
-        unset MYSQL_ENV_MYSQL_PASS
+	unset MYSQL_ENV_MYSQL_PASS
 fi
 
 MYSQL_HOST=${MYSQL_PORT_3306_TCP_ADDR:-${MYSQL_HOST}}
@@ -40,10 +40,10 @@ if [ "${MYSQL_DB}" != "--all-databases" ]; then
 
 		echo "=> Backup started: \${BACKUP_NAME}"
 		if \${BACKUP_CMD} > /backup/\${BACKUP_NAME} ;then
-		    echo "   Backup succeeded"
+			echo "   Backup succeeded"
 		else
-    		echo "   Backup failed"
-   		 	rm -rf /backup/\${BACKUP_NAME}
+		echo "   Backup failed"
+			rm -rf /backup/\${BACKUP_NAME}
 		fi
 	done
 else
@@ -53,20 +53,23 @@ else
 
 	echo "=> Backup started: \${BACKUP_NAME}"
 	if \${BACKUP_CMD} > /backup/\${BACKUP_NAME} ;then
-	    echo "   Backup succeeded"
+		if [ -n "\${COMPRESS}" ]; then
+			\${COMPRESS_CMD} /backup/\${BACKUP_NAME}
+		fi
+		echo "   Backup succeeded"
 	else
-    	echo "   Backup failed"
-   	 	rm -rf /backup/\${BACKUP_NAME}
+	echo "   Backup failed"
+		rm -rf /backup/\${BACKUP_NAME}
 	fi
 fi
 
 if [ -n "\${MAX_BACKUPS}" ]; then
-    while [ \$(ls /backup -N1 | wc -l) -gt \${MAX_BACKUPS} ];
-    do
-        BACKUP_TO_BE_DELETED=\$(ls /backup -N1 | sort | head -n 1)
-        echo "   Backup \${BACKUP_TO_BE_DELETED} is deleted"
-        rm -rf /backup/\${BACKUP_TO_BE_DELETED}
-    done
+	while [ \$(ls /backup -1 | wc -l) -gt \${MAX_BACKUPS} ];
+	do
+		BACKUP_TO_BE_DELETED=\$(ls /backup -1 | sort | head -n 1)
+		echo "   Backup \${BACKUP_TO_BE_DELETED} is deleted"
+		rm -rf /backup/\${BACKUP_TO_BE_DELETED}
+	done
 fi
 echo "=> Backup done"
 EOF
@@ -79,18 +82,18 @@ cat <<EOF >> /restore.sh
 
 if [ -z \$2 ]; then
 	echo "=> Restore database from \$1"
-    if mysql -h${MYSQL_HOST} -P${MYSQL_PORT} -u${MYSQL_USER} -p${MYSQL_PASS} < \$1 ;then
-       echo "   Restore succeeded"
-    else
-       echo "   Restore failed"
-    fi
+	if mysql -h${MYSQL_HOST} -P${MYSQL_PORT} -u${MYSQL_USER} -p${MYSQL_PASS} < \$1 ;then
+		echo "   Restore succeeded"
+	else
+		echo "   Restore failed"
+	fi
 else
 	echo "=> Restore database \$1 from \$2 "
-    if mysql -h${MYSQL_HOST} -P${MYSQL_PORT} -u${MYSQL_USER} -p${MYSQL_PASS} \$1 < \$2 ;then
-       echo "   Restore succeeded"
-    else
-       echo "   Restore failed"
-    fi
+	if mysql -h${MYSQL_HOST} -P${MYSQL_PORT} -u${MYSQL_USER} -p${MYSQL_PASS} \$1 < \$2 ;then
+		echo "   Restore succeeded"
+	else
+		echo "   Restore failed"
+	fi
 fi
 echo "=> Done"
 EOF
@@ -99,16 +102,16 @@ chmod +x /restore.sh
 touch /mysql_backup.log
 
 if [ -n "${INIT_BACKUP}" ]; then
-    echo "=> Create a backup on the startup"
-    /backup.sh
-elif [ -n "${INIT_RESTORE_LATEST}" ]; then
-    echo "=> Restore lates backup"
-    until nc -z $MYSQL_HOST $MYSQL_PORT
-    do
-        echo "waiting database container..."
-        sleep 1
-    done
-    ls -d -1 /backup/* | tail -1 | xargs /restore.sh
+	echo "=> Create a backup on the startup"
+	/backup.sh
+	elif [ -n "${INIT_RESTORE_LATEST}" ]; then
+		echo "=> Restore lates backup"
+		until nc -z $MYSQL_HOST $MYSQL_PORT
+	do
+		echo "waiting database container..."
+		sleep 1
+	done
+	ls -d -1 /backup/* | tail -1 | xargs /restore.sh
 fi
 
 echo "${CRON_TIME} /bin/sh /backup.sh | tee -a /mysql_backup.log 2>&1" > /crontab.conf
