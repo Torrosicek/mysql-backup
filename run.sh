@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # Get and set secret file for mysql pass if exists
-if [[ -e $MYSQL_PASS_FILE && -f $MYSQL_PASS_FILE  ]]; then
+if [ -e $MYSQL_PASS_FILE ] && [ -f $MYSQL_PASS_FILE  ]; then
 	MYSQL_PASS=$(cat $MYSQL_PASS_FILE)
 fi
 
