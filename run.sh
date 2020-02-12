@@ -66,7 +66,7 @@ fi
 if [ -n "\${MAX_BACKUPS}" ]; then
 	while [ \$(ls /backup -1 | wc -l) -gt \${MAX_BACKUPS} ];
 	do
-		BACKUP_TO_BE_DELETED=\$(ls /backup -1 | sort | head -n 1)
+		BACKUP_TO_BE_DELETED=\$(ls /backup -1 -t | tail -n 1)
 		echo "   Backup \${BACKUP_TO_BE_DELETED} is deleted"
 		rm -rf /backup/\${BACKUP_TO_BE_DELETED}
 	done
