@@ -1,5 +1,5 @@
 FROM alpine:latest
-LABEL maintainer="Yohann LOEFFLER <loeffler.yohann@gmail.com>"
+LABEL maintainer="Yohann LOEFFLER <loeffler.yohann@pm.me>"
 
 RUN apk add --no-cache \
         mysql-client \
